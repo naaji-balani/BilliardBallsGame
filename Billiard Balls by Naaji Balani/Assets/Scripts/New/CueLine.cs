@@ -17,23 +17,6 @@ public class CueLine : MonoBehaviour
     [SerializeField] Slider _forceSlider;
     [SerializeField] bool _isSliderPressed,_isDragging;
 
-    void Start()
-    {
-        //_3dCamera.enabled = false;
-
-        //lineRenderer.widthMultiplier = 0.1f;
-        //lineRenderer.positionCount = lengthOfLineRenderer;
-
-        // A simple 2 color gradient with a fixed alpha of 1.0f.
-        //float alpha = 1.0f;
-        //Gradient gradient = new Gradient();
-        //gradient.SetKeys(
-        //    new GradientColorKey[] { new GradientColorKey(c1, 0.0f), new GradientColorKey(c2, 1.0f) },
-        //    new GradientAlphaKey[] { new GradientAlphaKey(alpha, 0.0f), new GradientAlphaKey(alpha, 1.0f) }
-        //    );
-        //lineRenderer.colorGradient = gradient;
-    }
-
     bool AllBallsStopped()
     {
         for (int i = 0; i < _allBalls.Length; i++)
@@ -56,7 +39,7 @@ public class CueLine : MonoBehaviour
             lastMousePosition = Input.mousePosition;
 
             // Rotate the ball based on the horizontal movement
-            transform.Rotate(Vector3.up, deltaMouseX * 0.1f);
+            transform.Rotate(Vector3.up,  deltaMouseX);
         }
 
         if (Input.GetMouseButtonUp(0))
