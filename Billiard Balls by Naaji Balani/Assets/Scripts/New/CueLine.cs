@@ -19,19 +19,19 @@ public class CueLine : MonoBehaviour
 
     void Start()
     {
-        _3dCamera.enabled = false;
+        //_3dCamera.enabled = false;
 
-        lineRenderer.widthMultiplier = 0.1f;
-        lineRenderer.positionCount = lengthOfLineRenderer;
+        //lineRenderer.widthMultiplier = 0.1f;
+        //lineRenderer.positionCount = lengthOfLineRenderer;
 
         // A simple 2 color gradient with a fixed alpha of 1.0f.
-        float alpha = 1.0f;
-        Gradient gradient = new Gradient();
-        gradient.SetKeys(
-            new GradientColorKey[] { new GradientColorKey(c1, 0.0f), new GradientColorKey(c2, 1.0f) },
-            new GradientAlphaKey[] { new GradientAlphaKey(alpha, 0.0f), new GradientAlphaKey(alpha, 1.0f) }
-            );
-        lineRenderer.colorGradient = gradient;
+        //float alpha = 1.0f;
+        //Gradient gradient = new Gradient();
+        //gradient.SetKeys(
+        //    new GradientColorKey[] { new GradientColorKey(c1, 0.0f), new GradientColorKey(c2, 1.0f) },
+        //    new GradientAlphaKey[] { new GradientAlphaKey(alpha, 0.0f), new GradientAlphaKey(alpha, 1.0f) }
+        //    );
+        //lineRenderer.colorGradient = gradient;
     }
 
     bool AllBallsStopped()
@@ -56,9 +56,10 @@ public class CueLine : MonoBehaviour
             lastMousePosition = Input.mousePosition;
 
             // Rotate the ball based on the horizontal movement
-            transform.Rotate(Vector3.up, deltaMouseX);
+            transform.Rotate(Vector3.up, deltaMouseX * 0.1f);
         }
-        else
+
+        if (Input.GetMouseButtonUp(0))
         {
             // Store the last mouse position for the next drag event
             lastMousePosition = Input.mousePosition;
@@ -114,7 +115,7 @@ public class CueLine : MonoBehaviour
 
     public void SliderUp()
     {
-        _forceValue = Mathf.Round((_forceSlider.value * 3500) * 100) / 100;
+        _forceValue = Mathf.Round((_forceSlider.value * 5000) * 100) / 100;
         StartCoroutine(SliderRecoil(_forceValue));
 
         lineRenderer.enabled = false;
@@ -144,7 +145,7 @@ public class CueLine : MonoBehaviour
                 Vector3 normal = hit.normal;
                 Vector3 deflect = Vector3.Reflect(ray.direction, normal);
 
-                deflected = new Ray(hit.point, deflect);
+                deflected = new Ray(hit.point, -deflect);
                 return true;
             }
             else
