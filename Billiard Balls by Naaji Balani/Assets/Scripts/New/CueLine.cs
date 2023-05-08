@@ -11,7 +11,7 @@ public class CueLine : MonoBehaviour
     public Color c1 = Color.yellow;
     public Color c2 = Color.red;
     public int lengthOfLineRenderer = 4;
-    [SerializeField] LineRenderer lineRenderer,_impactLine;
+    [SerializeField] LineRenderer lineRenderer,_impactLine,_cueLine;
     [SerializeField] Camera _topViewCamera,_3dCamera;
     [SerializeField] Rigidbody[] _allBalls;
     float _forceValue;
@@ -78,6 +78,7 @@ public class CueLine : MonoBehaviour
                 lineRenderer.SetPosition(3, endPoint);
 
                 Debug.Log(Vector3.Angle(_impactLinePositions[0].position - _impactLinePositions[1].position, endPoint - hit.collider.transform.position));
+
             }
             else
             {
@@ -99,6 +100,23 @@ public class CueLine : MonoBehaviour
         }
     }
 
+
+    void CueBallLine(RaycastHit hit)
+    {
+        // Calculate the direction vector from the cue ball to the impact point
+        Vector3 direction = transform.position - hit.point;
+        direction.y = 0f; // Keep the line on the XZ plane
+
+        // Calculate the perpendicular vector to the direction vector
+        Vector3 perpendicular = new Vector3(-direction.z, 0f, direction.x).normalized;
+
+        // Calculate the end point of the cue line
+        Vector3 endPoint = _impactLinePositions[0].position - perpendicular * 2f;
+
+        // Update the cue line renderer
+        _cueLine.SetPosition(0, _impactLinePositions[0].position);
+        _cueLine.SetPosition(1, endPoint);
+    }
     public void ValueChange()
     {
         _cue.localPosition = new Vector3(_cue.localPosition.x, _cue.localPosition.y, -28 - _forceSlider.value * 6);
