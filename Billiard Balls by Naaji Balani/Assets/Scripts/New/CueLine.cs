@@ -5,12 +5,13 @@ using UnityEngine.UI;
 
 public class CueLine : MonoBehaviour
 {
+    [SerializeField] Transform[] _impactLinePositions;
     private Vector3 lastMousePosition;
     [SerializeField] Transform _cueAnchor,_cue;
     public Color c1 = Color.yellow;
     public Color c2 = Color.red;
     public int lengthOfLineRenderer = 4;
-    [SerializeField] LineRenderer lineRenderer;
+    [SerializeField] LineRenderer lineRenderer,_impactLine;
     [SerializeField] Camera _topViewCamera,_3dCamera;
     [SerializeField] Rigidbody[] _allBalls;
     float _forceValue;
@@ -30,6 +31,8 @@ public class CueLine : MonoBehaviour
 
     void Update()
     {
+        for (int i = 0; i < _impactLinePositions.Length; i++) _impactLine.SetPosition(i, _impactLinePositions[i].position);
+
         if (Input.GetMouseButton(0) && !_isSliderPressed && AllBallsStopped())
         {
             _isDragging = true;
@@ -66,13 +69,20 @@ public class CueLine : MonoBehaviour
 
             if (hit.collider.CompareTag("Player"))
             {
-                lineRenderer.SetPosition(2, (b.origin));
-                lineRenderer.SetPosition(3, b.origin + 3 * b.direction);
+                // Calculate direction vector and end point of line
+                Vector3 direction = (hit.collider.transform.position - hit.point).normalized;
+                Vector3 endPoint = hit.point + direction * 3f;
+
+                // Update last two points of lineRenderer
+                lineRenderer.SetPosition(2, hit.collider.transform.position);
+                lineRenderer.SetPosition(3, endPoint);
+
+                Debug.Log(Vector3.Angle(_impactLinePositions[0].position - _impactLinePositions[1].position, endPoint - hit.collider.transform.position));
             }
             else
             {
                 lineRenderer.SetPosition(2, hit.point);
-                lineRenderer.SetPosition(3, hit.point + 3 * a.direction);
+                lineRenderer.SetPosition(3, hit.point);
             }
         }
 
@@ -98,7 +108,7 @@ public class CueLine : MonoBehaviour
 
     public void SliderUp()
     {
-        _forceValue = Mathf.Round((_forceSlider.value * 5000) * 100) / 100;
+        _forceValue = Mathf.Round((_forceSlider.value * 3000) * 100) / 100;
         StartCoroutine(SliderRecoil(_forceValue));
 
         lineRenderer.enabled = false;
@@ -125,10 +135,14 @@ public class CueLine : MonoBehaviour
         {
             if (hit.collider.CompareTag("Player"))
             {
+                // Calculate the center of the hit object
+                Vector3 center = hit.collider.bounds.center;
+
                 Vector3 normal = hit.normal;
                 Vector3 deflect = Vector3.Reflect(ray.direction, normal);
 
-                deflected = new Ray(hit.point, -deflect);
+                // Set the deflected Ray to start from the center of the hit object
+                deflected = new Ray(center, -deflect);
                 return true;
             }
             else
@@ -141,5 +155,6 @@ public class CueLine : MonoBehaviour
         deflected = new Ray(Vector3.zero, Vector3.zero);
         return false;
     }
+
 
 }
