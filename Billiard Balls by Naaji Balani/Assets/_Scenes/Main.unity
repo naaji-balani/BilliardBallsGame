@@ -2451,7 +2451,7 @@ LineRenderer:
   - {x: 0, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.02
+    widthMultiplier: 0.05
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -2512,7 +2512,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1243821524}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -2.55, y: 0, z: 0.39}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3482,6 +3482,7 @@ MonoBehaviour:
   lengthOfLineRenderer: 4
   lineRenderer: {fileID: 1243821525}
   _impactLine: {fileID: 528351689}
+  _cueLine: {fileID: 1694168663}
   _topViewCamera: {fileID: 1320509048}
   _3dCamera: {fileID: 987905020}
   _allBalls:
