@@ -1,27 +1,28 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CueLine : MonoBehaviour
+public class PoolController : MonoBehaviour
 {
     [SerializeField] Transform[] _impactLinePositions;
     private Vector3 lastMousePosition;
-    [SerializeField] Transform _cueAnchor,_cue;
+    [SerializeField] Transform _cueAnchor, _cue;
     public Color c1 = Color.yellow;
     public Color c2 = Color.red;
     public int lengthOfLineRenderer = 4;
-    [SerializeField] LineRenderer lineRenderer,_impactLine,_cueLine;
-    [SerializeField] Camera _topViewCamera,_3dCamera;
+    [SerializeField] LineRenderer lineRenderer, _impactLine, _cueLine;
+    [SerializeField] Camera _topViewCamera, _3dCamera;
     [SerializeField] Rigidbody[] _allBalls;
     float _forceValue;
     [SerializeField] Slider _forceSlider;
-    [SerializeField] bool _isSliderPressed,_isDragging;
+    [SerializeField] bool _isSliderPressed, _isDragging;
     private Ray _ray, _outRay;
     private RaycastHit hit;
 
+
     bool AllBallsStopped()
     {
+
         for (int i = 0; i < _allBalls.Length; i++)
         {
             if (_allBalls[i].velocity != Vector3.zero) return false;
@@ -30,20 +31,19 @@ public class CueLine : MonoBehaviour
         return true;
     }
 
+    // Update is called once per frame
     void Update()
     {
-        //for (int i = 0; i < _impactLinePositions.Length; i++) _impactLine.SetPosition(i, _impactLinePositions[i].position);
-
         if (Input.GetMouseButton(0) && !_isSliderPressed && AllBallsStopped())
         {
             _isDragging = true;
             // Get the horizontal movement of the mouse drag
             float mouseX = Input.mousePosition.x;
-            float deltaMouseX = (mouseX - lastMousePosition.x) * 0.2f;
+            float deltaMouseX = (mouseX - lastMousePosition.x) * 0.5f;
             lastMousePosition = Input.mousePosition;
 
             // Rotate the ball based on the horizontal movement
-            transform.Rotate(Vector3.up,  deltaMouseX);
+            transform.Rotate(Vector3.up, deltaMouseX);
         }
 
         if (Input.GetMouseButtonUp(0))
@@ -59,7 +59,7 @@ public class CueLine : MonoBehaviour
             _3dCamera.enabled = !_3dCamera.enabled;
         }
 
-        _ray = new Ray(transform.position, transform.forward) ;
+        _ray = new Ray(transform.position, transform.forward);
 
         if (Deflect(_ray, out _outRay, out hit))
         {
@@ -101,19 +101,19 @@ public class CueLine : MonoBehaviour
 
                 _cueLine.enabled = false;
             }
-        }
 
-        if (AllBallsStopped())
-        {
-            lineRenderer.enabled = true;
-            _cueAnchor.gameObject.SetActive(true);
+            if (AllBallsStopped())
+            {
+                lineRenderer.enabled = true;
+                _cueAnchor.gameObject.SetActive(true);
 
-        }
-        else
-        {
-            lineRenderer.enabled = false;
-            _cueLine.enabled = false;
-            _cueAnchor.gameObject.SetActive(false);
+            }
+            else
+            {
+                lineRenderer.enabled = false;
+                _cueLine.enabled = false;
+                _cueAnchor.gameObject.SetActive(false);
+            }
         }
     }
 
@@ -136,7 +136,7 @@ public class CueLine : MonoBehaviour
 
     IEnumerator SliderRecoil(float forceValue)
     {
-        while(_forceSlider.value != 0)
+        while (_forceSlider.value != 0)
         {
             _forceSlider.value -= 5 * Time.fixedDeltaTime;
             yield return new WaitForFixedUpdate();
@@ -175,5 +175,25 @@ public class CueLine : MonoBehaviour
         return false;
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        // Get the rigidbody component of the other game object
+        Rigidbody2D otherRigidbody = collision.gameObject.GetComponent<Rigidbody2D>();
+
+        float speed = 10;
+
+        if (otherRigidbody != null)
+        {
+            // Calculate the direction of the collision
+            Vector2 direction = otherRigidbody.position - GetComponent<Rigidbody2D>().position;
+            direction.Normalize();
+
+            // Calculate the velocity to be applied to the other ball
+            Vector2 velocity = direction * speed;
+
+            // Apply the velocity to the other ball
+            otherRigidbody.velocity = velocity;
+        }
+    }
 
 }
