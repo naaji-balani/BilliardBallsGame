@@ -32,7 +32,7 @@ public class CueLine : MonoBehaviour
 
     void Update()
     {
-        for (int i = 0; i < _impactLinePositions.Length; i++) _impactLine.SetPosition(i, _impactLinePositions[i].position);
+        //for (int i = 0; i < _impactLinePositions.Length; i++) _impactLine.SetPosition(i, _impactLinePositions[i].position);
 
         if (Input.GetMouseButton(0) && !_isSliderPressed && AllBallsStopped())
         {
@@ -59,7 +59,7 @@ public class CueLine : MonoBehaviour
             _3dCamera.enabled = !_3dCamera.enabled;
         }
 
-        _ray = new Ray(transform.position, transform.forward);
+        _ray = new Ray(transform.position, transform.forward) ;
 
         if (Deflect(_ray, out _outRay, out hit))
         {
@@ -91,8 +91,8 @@ public class CueLine : MonoBehaviour
 
                 _cueLine.enabled = true;
 
-                Debug.Log(Vector3.Angle(_impactLinePositions[0].position - _impactLinePositions[1].position, endPoint - hit.collider.transform.position));
-
+                Debug.Log(hit.point.x + "\t " + hit.collider.gameObject.transform.position.x);
+                //Debug.Log(Vector3.Angle(_impactLinePositions[0].position - _impactLinePositions[1].position, endPoint - hit.collider.transform.position));
             }
             else
             {
@@ -126,7 +126,7 @@ public class CueLine : MonoBehaviour
 
     public void SliderUp()
     {
-        _forceValue = Mathf.Round((_forceSlider.value * 3000) * 100) / 100;
+        _forceValue = Mathf.Round((_forceSlider.value * 2000) * 100) / 100;
         StartCoroutine(SliderRecoil(_forceValue));
 
         lineRenderer.enabled = false;
