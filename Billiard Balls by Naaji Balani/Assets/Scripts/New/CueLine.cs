@@ -17,6 +17,8 @@ public class CueLine : MonoBehaviour
     float _forceValue;
     [SerializeField] Slider _forceSlider;
     [SerializeField] bool _isSliderPressed,_isDragging;
+    private Ray _ray, _outRay;
+    private RaycastHit hit;
 
     bool AllBallsStopped()
     {
@@ -28,7 +30,6 @@ public class CueLine : MonoBehaviour
         return true;
     }
 
-
     void Update()
     {
         for (int i = 0; i < _impactLinePositions.Length; i++) _impactLine.SetPosition(i, _impactLinePositions[i].position);
@@ -38,7 +39,7 @@ public class CueLine : MonoBehaviour
             _isDragging = true;
             // Get the horizontal movement of the mouse drag
             float mouseX = Input.mousePosition.x;
-            float deltaMouseX = mouseX - lastMousePosition.x;
+            float deltaMouseX = (mouseX - lastMousePosition.x) * 0.5f;
             lastMousePosition = Input.mousePosition;
 
             // Rotate the ball based on the horizontal movement
@@ -58,13 +59,11 @@ public class CueLine : MonoBehaviour
             _3dCamera.enabled = !_3dCamera.enabled;
         }
 
-        Ray a = new Ray(transform.position, transform.forward);
-        Ray b;
-        RaycastHit hit;
+        _ray = new Ray(transform.position, transform.forward);
 
-        if (Deflect(a, out b, out hit))
+        if (Deflect(_ray, out _outRay, out hit))
         {
-            lineRenderer.SetPosition(0, a.origin);
+            lineRenderer.SetPosition(0, _ray.origin);
             lineRenderer.SetPosition(1, hit.point);
 
             if (hit.collider.CompareTag("Player"))
@@ -79,7 +78,13 @@ public class CueLine : MonoBehaviour
 
                 Vector3 directionOfCueLine = endPoint - hit.collider.transform.position;
                 Vector3 normal = new Vector3(-directionOfCueLine.z, 0, directionOfCueLine.x).normalized;
-                Vector3 endpoint = hit.point + normal * -3;
+
+                sbyte multiple;
+
+                if (hit.point.x < hit.collider.gameObject.transform.position.x) multiple = 1;
+                else multiple = -1;
+
+                Vector3 endpoint = hit.point + normal * 1.5f * multiple;
 
                 _cueLine.SetPosition(0, hit.point);
                 _cueLine.SetPosition(1, endpoint);
